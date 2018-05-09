@@ -1,0 +1,70 @@
+Through the Looking Glass
+What Does a Load Balancer Do Anyway?
+
+Aidan Coyle
+Supporting Services
+acoyle@enova.com
+
+* F5 Overview
+
+.image lb.png _ 1000
+
+* lbstatus.enova.com
+
+Displays the status of pool members as polled by the F5
+
+  [fg-386] ~ > curl lbstatus.enova.com/status?pool=amortizer.enova.com.80
+  amortizer.enova.com.80,10.7.80.38,80,up
+  amortizer.enova.com.80,10.7.80.39,80,up
+
+Notably used in cnuapp deployments.
+
+* How Does That Work?
+
+.image lb_no_pool.png _ 700
+
+* Design Issues
+
+This doesn't work like our "normal" apps
+
+- It's all written in TCL
+- "deployment" is just changing the script in the F5
+- Uses the internals of the F5 that aren't public
+
+* Enter Scry
+
+A lot closer to "normal"
+
+- Written in Go and uses standard deployment pipelines
+- Uses the F5 REST API to get the info it needs
+- Supports multiple APIs, including an lbstatus compatible one
+
+* What's Next?
+
+What if we had a nice JSON API to monitor all pools?
+
+What if we could build data aggregation and analysis with the F5 API?
+
+What if we automated our changes and deployments
+
+* The Crystal Ball Says...
+
+The future looks bright!
+
+  [fg-386] ~ > curl  https://scry.enova.com/api/production/pools | jq '.[0]'
+  {
+    "name": "a8b-leads.staging.enova.com.443",
+    "members": [
+      {
+        "ip": "10.7.100.74",
+        "port": "46803",
+        "state": "up"
+      },
+      {
+        "ip": "10.7.100.75",
+        "port": "46803",
+        "state": "up"
+      }
+    ]
+  }
+
